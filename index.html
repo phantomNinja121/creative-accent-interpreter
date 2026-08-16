@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Creative Accent Interpreter · Thinking in Visual Metaphors</title>
+<meta name="description" content="Four dials to hear the style you already have. Interpret the aesthetics, voice, and avatar that make your visual metaphors unmistakably yours.">
+<meta name="author" content="Milani Creative LLC">
+<meta name="theme-color" content="#EAF2FE">
+<meta name="color-scheme" content="light">
+
+<!-- Icons and home-screen install. All paths are relative so the app works
+     from a GitHub Pages subfolder or any other directory. -->
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="manifest" href="./site.webmanifest">
+<meta name="apple-mobile-web-app-title" content="Creative Accent">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<!-- Link previews. Social platforms need an absolute URL for the image, so
+     replace the two og:*/twitter:* URLs below with your live address once
+     GitHub Pages is switched on. Everything else works without them. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Thinking in Visual Metaphors">
+<meta property="og:title" content="Creative Accent Interpreter">
+<meta property="og:description" content="Four dials to hear the style you already have.">
+<meta property="og:image" content="https://USERNAME.github.io/creative-accent-interpreter/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Creative Accent Interpreter">
+<meta name="twitter:description" content="Four dials to hear the style you already have.">
+<meta name="twitter:image" content="https://USERNAME.github.io/creative-accent-interpreter/og-image.png">
+<style>
+:root{
+  --bg:#EAF2FE;
+  --ink:#0E1626;
+  --ink-soft:#4B5B72;
+  --card:#FFFFFF;
+  --line:#D9E4F3;
+  --coral:#E15A3C;
+  --coral-soft:#FDEFEB;
+  --green:#00A97A;
+  --green-soft:#E6F7F1;
+  --blue:#2C7FEF;
+  --blue-soft:#EAF2FE;
+  --radius:14px;
+  --shadow:0 1px 2px rgba(14,22,38,.06), 0 8px 24px rgba(14,22,38,.07);
+  --font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --serif:Georgia,"Iowan Old Style","Times New Roman",serif;
+  /* accent used by specimen tiles, overridden per section */
+  --spec:var(--ink);
+  --spec-soft:#EDF3FB;
+  /* live mirror of the student's own palette, kept in sync by JS */
+  --c-bg:#FFFFFF;
+  --c-dominant:#0E1626;
+  --c-accent:#E15A3C;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;font-size:inherit;cursor:pointer}
+input,textarea,select{font-family:inherit;font-size:inherit;color:inherit}
+
+.shell{max-width:860px;margin:0 auto;padding:0 20px 140px}
+
+/* ---------- topbar ---------- */
+.topbar{position:sticky;top:0;z-index:20;background:rgba(234,242,254,.93);backdrop-filter:saturate(1.4) blur(8px);border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:860px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-weight:700;font-size:14px;white-space:nowrap}
+.brand-sub{color:var(--ink-soft);font-weight:500}
+.steps{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+.step-dot{border:1px solid var(--line);background:var(--card);color:var(--ink-soft);border-radius:999px;padding:4px 11px;font-size:12.5px;font-weight:600;line-height:1.4;transition:all .15s ease}
+.step-dot[aria-current="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.step-dot.done{color:var(--ink);border-color:#B9CDE8}
+.view-toggle{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 13px;font-size:12.5px;font-weight:700;color:var(--ink)}
+.view-toggle:hover{border-color:#A9C2E4}
+.progress-rail{height:3px;background:var(--line)}
+.progress-fill{height:100%;background:var(--ink);width:0;transition:width .3s ease, background .3s ease}
+
+/* ---------- screens ---------- */
+.screen{display:none;padding-top:36px;animation:rise .25s ease}
+.screen.active{display:block}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;margin:0 0 8px}
+.eyebrow.aes{color:var(--coral)} .eyebrow.voi{color:var(--green)} .eyebrow.ava{color:var(--blue)} .eyebrow.ovr{color:var(--ink-soft)}
+
+h1{font-size:clamp(28px,4.6vw,40px);line-height:1.15;letter-spacing:-.02em;margin:8px 0 14px}
+h2{font-size:clamp(24px,3.6vw,32px);line-height:1.2;letter-spacing:-.02em;margin:8px 0 10px}
+h2.aes{color:var(--coral)} h2.voi{color:var(--green)} h2.ava{color:var(--blue)}
+/* the card screen's h2 is a full sentence, so it sets smaller */
+h2.sentence{font-size:clamp(19px,2.3vw,24px);line-height:1.35;letter-spacing:-.01em;max-width:46ch}
+h3{font-size:14px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin:0 0 16px;color:var(--ink)}
+.lede{font-size:17px;color:var(--ink-soft);margin:0 0 26px;max-width:60ch}
+.note{margin:-10px 0 18px;font-size:14.5px;color:var(--ink-soft)}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);margin-bottom:18px}
+.card.aes{border-top:3px solid var(--coral);--spec:var(--coral);--spec-soft:var(--coral-soft)}
+.card.voi{border-top:3px solid var(--green);--spec:var(--green);--spec-soft:var(--green-soft)}
+.card.ava{border-top:3px solid var(--blue);--spec:var(--blue);--spec-soft:var(--blue-soft)}
+.card.ovr{border-top:3px solid var(--ink)}
+
+.hint{border-left:3px solid var(--ink);background:#F5F8FD;border-radius:0 10px 10px 0;padding:12px 16px;margin:0 0 22px;font-size:14.5px;color:var(--ink-soft)}
+.hint b{color:var(--ink);font-weight:700}
+.hint.aes{border-color:var(--coral);background:var(--coral-soft)}
+.hint.voi{border-color:var(--green);background:var(--green-soft)}
+.hint.ava{border-color:var(--blue);background:var(--blue-soft)}
+
+/* ---------- dial ---------- */
+.dial-ends{display:flex;justify-content:space-between;font-size:14px;font-weight:700;margin-bottom:8px}
+.dial input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:34px;background:transparent;margin:0;display:block}
+.dial input[type=range]:focus{outline:none}
+.dial input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(44,127,239,.35)}
+.dial input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:var(--track,#DCE6F4)}
+.dial input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;border-radius:9px;background:var(--knob,var(--ink));border:2px solid #fff;margin-top:-10px;box-shadow:0 2px 6px rgba(14,22,38,.28)}
+.dial input[type=range]::-moz-range-track{height:6px;border-radius:999px;background:var(--track,#DCE6F4)}
+.dial input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:8px;background:var(--knob,var(--ink));border:2px solid #fff;box-shadow:0 2px 6px rgba(14,22,38,.28)}
+.dial-ticks{display:flex;justify-content:space-between;padding:0 4px;margin-top:-4px}
+.dial-ticks i{width:1px;height:6px;background:#C7D6EA}
+.dial-read{margin-top:14px;font-size:16px;color:var(--ink);min-height:3em}
+
+/* ---------- choices ---------- */
+.field{margin-bottom:24px}
+.field:last-child{margin-bottom:0}
+.label{display:block;font-size:13px;font-weight:700;margin-bottom:9px}
+.sub{font-weight:500;color:var(--ink-soft)}
+.choices{display:flex;flex-wrap:wrap;gap:8px}
+.choice{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:8px 15px;font-size:14px;font-weight:600;transition:all .12s ease}
+.choice:hover{border-color:#A9C2E4}
+.choice[aria-pressed="true"]{background:var(--spec);border-color:var(--spec);color:#fff}
+
+/* ---------- specimen tiles ---------- */
+.specimens{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.spec{border:1px solid var(--line);border-radius:12px;background:#fff;padding:0;overflow:hidden;text-align:center;transition:all .12s ease;display:flex;flex-direction:column;width:100%}
+.spec:hover{border-color:#A9C2E4}
+.spec .sample{display:flex;align-items:center;justify-content:center;height:92px;flex:none;background:#F7FAFF;border-bottom:1px solid var(--line);color:var(--ink);line-height:1;padding:0 8px;overflow:hidden}
+.spec .name{display:flex;align-items:center;justify-content:center;flex:1;width:100%;padding:9px 6px;font-size:12.5px;font-weight:700;line-height:1.25;color:var(--ink-soft);background:#fff}
+.spec[aria-pressed="true"]{border-color:var(--spec);box-shadow:0 0 0 2px var(--spec)}
+.spec[aria-pressed="true"] .sample{background:var(--spec-soft)}
+.spec[aria-pressed="true"] .name{background:var(--spec);color:#fff}
+.sm-caps{font-size:21px;font-weight:800;letter-spacing:.04em}
+.sm-lower,.sm-sentence{font-size:26px;font-weight:700}
+.sm-lower{text-transform:lowercase}
+.sm-sentence{text-transform:capitalize}
+.sm-aa{font-size:44px;font-weight:700}
+.sm-serif{font-family:var(--serif)}
+.sm-trace{font-size:44px;font-weight:800;color:transparent;-webkit-text-stroke:1.5px var(--ink)}
+.spec[aria-pressed="true"] .sm-trace{-webkit-text-stroke-color:var(--spec)}
+@supports not ((-webkit-text-stroke:1px #000)){
+  .sm-trace{color:var(--ink);opacity:.3}
+  .spec[aria-pressed="true"] .sm-trace{color:var(--spec);opacity:.45}
+}
+.sm-hand{width:96px;height:52px;color:var(--ink);display:block}
+.spec[aria-pressed="true"] .sm-hand{color:var(--spec)}
+.sm-hand path{fill:none;stroke:currentColor;stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- picker tiles (audience) ---------- */
+.picks{grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px}
+.picks .sample{height:70px}
+.picks .name{font-size:12px;padding:8px 4px}
+.ico{width:56px;height:42px;display:block;color:var(--ink)}
+.spec[aria-pressed="true"] .ico{color:var(--spec)}
+.ico path,.ico circle{fill:none;stroke:currentColor;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- fills / texture swatches ---------- */
+.sm-svg{width:72px;height:48px;display:block;color:var(--c-dominant)}
+.spec .sample.bleed{padding:0}
+.sm-full{width:100%;height:100%;display:block}
+.tex-mark circle,.tex-mark path{fill:none;stroke:var(--c-dominant);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- title mock ---------- */
+.titlemock{display:flex;flex-direction:column;align-items:center;gap:7px;width:100%;padding:0 12px}
+.tm-title{font-size:13px;font-weight:800;letter-spacing:.06em;line-height:1;color:var(--c-dominant)}
+.tm-line{display:block;height:5px;border-radius:3px;background:var(--c-dominant);opacity:.3}
+.tm-line.w1{width:74px} .tm-line.w2{width:52px}
+.spec[data-value="Titles a different color"] .tm-title{color:var(--c-accent)}
+.spec[data-value="Titles a different style"] .tm-title,
+.spec[data-value="Titles different in color and style"] .tm-title{padding:5px 9px;border-radius:6px;color:var(--c-bg)}
+.spec[data-value="Titles a different style"] .tm-title{background:var(--c-dominant)}
+.spec[data-value="Titles different in color and style"] .tm-title{background:var(--c-accent)}
+
+/* ---------- colors ---------- */
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.sw{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff}
+.sw input[type=color]{-webkit-appearance:none;appearance:none;border:none;background:none;width:38px;height:38px;padding:0;cursor:pointer;border-radius:8px;flex:none}
+.sw input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+.sw input[type=color]::-webkit-color-swatch{border:1px solid rgba(14,22,38,.18);border-radius:8px}
+.sw input[type=color]::-moz-color-swatch{border:1px solid rgba(14,22,38,.18);border-radius:8px}
+.sw-meta{min-width:0;display:flex;flex-direction:column}
+.sw-name{display:block;font-size:13px;font-weight:700;line-height:1.25}
+.sw-hex{display:block;font-size:12px;line-height:1.3;color:var(--ink-soft);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+/* ---------- inputs ---------- */
+input[type=text],textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 13px;background:#fff}
+input[type=text]:focus,textarea:focus{outline:2px solid var(--blue);outline-offset:1px;border-color:transparent}
+textarea{resize:vertical;min-height:84px}
+.reveal{display:none;margin-top:10px}
+.reveal.on{display:block}
+
+/* ---------- avatar ---------- */
+.drop{border:2px dashed #B9CDE8;border-radius:14px;background:#F7FAFF;padding:30px 20px;text-align:center;transition:all .15s ease}
+.drop.over{border-color:var(--blue);background:var(--blue-soft)}
+.drop p{margin:0 0 4px;font-weight:600}
+.drop small{color:var(--ink-soft)}
+.avatar-preview{display:none;align-items:center;gap:18px;flex-wrap:wrap}
+.avatar-preview.on{display:flex}
+.avatar-preview img{width:132px;height:132px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:12px;padding:6px}
+
+/* ---------- buttons ---------- */
+.btn{border-radius:10px;padding:12px 22px;font-weight:700;border:1px solid transparent;transition:all .12s ease}
+.btn-primary{background:var(--ink);color:#fff}
+.btn-primary:hover{background:#233149}
+.btn-ghost{background:#fff;color:var(--ink);border-color:var(--line)}
+.btn-ghost:hover{border-color:#A9C2E4}
+.btn-link{background:none;border:none;color:var(--ink-soft);font-weight:600;text-decoration:underline;padding:8px 0}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-sm{padding:8px 14px;font-size:14px;border-radius:9px}
+
+.navbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(234,242,254,.94);backdrop-filter:blur(8px);border-top:1px solid var(--line)}
+.navbar-inner{max-width:860px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:12px}
+.navbar .spacer{flex:1}
+.navbar .counter{font-size:13px;color:var(--ink-soft)}
+
+/* ---------- result ---------- */
+.result-actions{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+#cardCanvas{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.brief{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;background:#F7FAFF;border:1px solid var(--line);border-radius:10px;padding:16px;color:var(--ink-soft);overflow-x:auto}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;z-index:60;background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s ease}
+.toast.on{opacity:1}
+
+.intro-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:22px}
+.intro-item{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fff}
+.intro-item b{display:block;font-size:13px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
+.intro-item.a b{color:var(--coral)} .intro-item.v b{color:var(--green)} .intro-item.r b{color:var(--blue)}
+.intro-item span{font-size:14px;color:var(--ink-soft)}
+
+.foot{margin-top:34px;font-size:13px;color:var(--ink-soft);text-align:center}
+
+/* ---------- flat / see-it-all mode ---------- */
+body.flat .screen{display:block;padding-top:20px}
+body.flat .screen + .screen{border-top:1px solid #CFDDEF;margin-top:44px;padding-top:44px}
+body.flat .shell{padding-bottom:120px}
+
+@media (max-width:680px){
+  .topbar-inner{padding:10px 16px;gap:10px}
+  /* the full lockup is wider than a phone, so drop the course name */
+  .brand{white-space:normal;font-size:13px;line-height:1.3}
+  .brand-sub{display:none}
+  .view-toggle{margin-left:auto}
+  .steps{display:none}
+  .shell{padding:0 16px 150px}
+  .card{padding:18px}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span data-copy="app.brandTitle"></span> <span class="brand-sub">· <span data-copy="app.brandSub"></span></span></div>
+    <nav class="steps" id="steps" aria-label="Progress"></nav>
+    <button class="view-toggle" id="viewToggle" type="button"></button>
+  </div>
+  <div class="progress-rail"><div class="progress-fill" id="progressFill"></div></div>
+</header>
+
+<main class="shell">
+
+  <!-- 0 · OVERVIEW -->
+  <section class="screen active" data-screen="0">
+    <h1 data-copy="overview.h1"></h1>
+    <p class="lede" data-copy="overview.lede"></p>
+    <div class="hint" data-copy="overview.hint1"></div>
+
+    <div class="intro-grid">
+      <div class="intro-item a"><b data-copy="overview.tile1.title"></b><span data-copy="overview.tile1.body"></span></div>
+      <div class="intro-item v"><b data-copy="overview.tile2.title"></b><span data-copy="overview.tile2.body"></span></div>
+      <div class="intro-item r"><b data-copy="overview.tile3.title"></b><span data-copy="overview.tile3.body"></span></div>
+    </div>
+
+    <div class="card ovr">
+      <h3 data-copy="overview.dial.title"></h3>
+      <p class="note" data-copy="overview.dial.note"></p>
+      <div class="dial" data-accent="neutral">
+        <div class="dial-ends"><span data-copy="overview.dial.left"></span><span data-copy="overview.dial.right"></span></div>
+        <input type="range" id="dOverall" min="0" max="100" value="50" step="1" aria-label="Overall">
+        <div class="dial-ticks"><i></i><i></i><i></i><i></i><i></i></div>
+        <p class="dial-read" id="rOverall"></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="field">
+        <label class="label" for="fName"><span data-copy="overview.sig.label"></span> <span class="sub" data-copy="overview.sig.hint"></span></label>
+        <input type="text" id="fName" data-copy-ph="overview.sig.ph" autocomplete="name">
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label class="label"><span data-copy="overview.aud.label"></span> <span class="sub" data-copy="overview.aud.hint"></span></label>
+        <div class="specimens picks" data-group="goal" data-multi="true">
+          <button class="spec" data-value="Myself">
+            <span class="sample"><svg class="ico" viewBox="0 0 64 48" aria-hidden="true"><circle cx="32" cy="17" r="8.5"/><path d="M17 43 Q 32 29 47 43"/></svg></span>
+            <span class="name" data-copy="aud.myself"></span>
+          </button>
+          <button class="spec" data-value="Clients">
+            <span class="sample"><svg class="ico" viewBox="0 0 64 48" aria-hidden="true"><path d="M13 19 h38 a2 2 0 0 1 2 2 v19 a2 2 0 0 1-2 2 h-38 a2 2 0 0 1-2-2 v-19 a2 2 0 0 1 2-2 z"/><path d="M25 19 v-4 a3 3 0 0 1 3-3 h8 a3 3 0 0 1 3 3 v4"/><path d="M11 29 h42"/></svg></span>
+            <span class="name" data-copy="aud.clients"></span>
+          </button>
+          <button class="spec" data-value="Students">
+            <span class="sample"><svg class="ico" viewBox="0 0 64 48" aria-hidden="true"><path d="M32 11 L 54 21 L 32 31 L 10 21 Z"/><path d="M20 26 v10 q12 7 24 0 v-10"/></svg></span>
+            <span class="name" data-copy="aud.students"></span>
+          </button>
+          <button class="spec" data-value="Patients">
+            <span class="sample"><svg class="ico" viewBox="0 0 64 48" aria-hidden="true"><path d="M32 42 C 13 29 12 19 20 15 C 26.5 12 31 17.5 32 21 C 33 17.5 37.5 12 44 15 C 52 19 51 29 32 42 Z"/></svg></span>
+            <span class="name" data-copy="aud.patients"></span>
+          </button>
+          <button class="spec" data-value="An online audience">
+            <span class="sample"><svg class="ico" viewBox="0 0 64 48" aria-hidden="true"><circle cx="32" cy="24" r="4.5"/><path d="M23 15 a13 13 0 0 0 0 18"/><path d="M41 15 a13 13 0 0 1 0 18"/><path d="M15 8 a23 23 0 0 0 0 32"/><path d="M49 8 a23 23 0 0 1 0 32"/></svg></span>
+            <span class="name" data-copy="aud.online"></span>
+          </button>
+          <button class="spec" data-value="Personal growth">
+            <span class="sample"><svg class="ico" viewBox="0 0 64 48" aria-hidden="true"><path d="M32 43 V 21"/><path d="M32 30 C 23 30 17 24 17 16 C 26 16 32 22 32 30 Z"/><path d="M32 26 C 40 26 46 21 46 13 C 38 13 32 18 32 26 Z"/></svg></span>
+            <span class="name" data-copy="aud.growth"></span>
+          </button>
+          <button class="spec" data-value="Leveling up my writing">
+            <span class="sample"><svg class="ico" viewBox="0 0 64 48" aria-hidden="true"><path d="M16 41 L 20 31 L 42 9 L 48 15 L 26 37 Z"/><path d="M38 13 L 44 19"/><path d="M16 41 L 22 39"/></svg></span>
+            <span class="name" data-copy="aud.writing"></span>
+          </button>
+          <button class="spec" data-value="Other">
+            <span class="sample"><svg class="ico" viewBox="0 0 64 48" aria-hidden="true"><path d="M13 12 h38 a3 3 0 0 1 3 3 v18 a3 3 0 0 1-3 3 h-38 a3 3 0 0 1-3-3 v-18 a3 3 0 0 1 3-3 z"/><path d="M32 17 v14 M25 24 h14"/></svg></span>
+            <span class="name" data-copy="aud.other"></span>
+          </button>
+        </div>
+        <div class="reveal" id="goalOtherWrap">
+          <input type="text" id="fGoalOther" data-copy-ph="overview.aud.otherPh">
+        </div>
+      </div>
+    </div>
+
+    <div class="hint ava" data-copy="overview.hint2"></div>
+  </section>
+
+  <!-- 1 · AESTHETICS -->
+  <section class="screen" data-screen="1">
+    <h2 class="aes" data-copy="aes.h2"></h2>
+    <p class="lede" data-copy="aes.lede"></p>
+    <div class="hint aes" data-copy="aes.hint"></div>
+
+    <div class="card aes">
+      <h3 data-copy="aes.dial.title"></h3>
+      <div class="dial" data-accent="coral">
+        <div class="dial-ends"><span data-copy="aes.dial.left"></span><span data-copy="aes.dial.right"></span></div>
+        <input type="range" id="dAesthetics" min="0" max="100" value="50" step="1" aria-label="Aesthetics">
+        <div class="dial-ticks"><i></i><i></i><i></i><i></i><i></i></div>
+        <p class="dial-read" id="rAesthetics"></p>
+      </div>
+    </div>
+
+    <div class="card aes">
+      <h3 data-copy="colors.title"></h3>
+      <p class="note" data-copy="colors.note"></p>
+      <div class="swatches" id="swatches"></div>
+
+      <div class="field" style="margin-top:24px">
+        <label class="label" data-copy="fills.label"></label>
+        <div class="specimens" data-group="fills">
+          <button class="spec" data-value="Simple fills">
+            <span class="sample"><svg class="sm-svg" viewBox="0 0 72 48" aria-hidden="true"><circle cx="36" cy="24" r="17" fill="var(--c-accent)" stroke="#0E1626" stroke-width="2.6"/></svg></span>
+            <span class="name" data-copy="fills.simple"></span>
+          </button>
+          <button class="spec" data-value="Gradient fills">
+            <span class="sample"><svg class="sm-svg" viewBox="0 0 72 48" aria-hidden="true"><defs><linearGradient id="gradFill" x1="0" y1="0" x2="0.9" y2="1"><stop offset="0" style="stop-color:var(--c-accent)" stop-opacity="1"/><stop offset="1" style="stop-color:var(--c-accent)" stop-opacity="0.12"/></linearGradient></defs><circle cx="36" cy="24" r="17" fill="url(#gradFill)" stroke="#0E1626" stroke-width="2.6"/></svg></span>
+            <span class="name" data-copy="fills.gradient"></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:0">
+        <label class="label"><span data-copy="titles.label"></span> <span class="sub" data-copy="titles.hint"></span></label>
+        <div class="specimens" data-group="titles">
+          <button class="spec" data-value="Titles same as labels">
+            <span class="sample"><span class="titlemock"><b class="tm-title">TITLE</b><i class="tm-line w1"></i><i class="tm-line w2"></i></span></span>
+            <span class="name" data-copy="titles.same"></span>
+          </button>
+          <button class="spec" data-value="Titles a different color">
+            <span class="sample"><span class="titlemock"><b class="tm-title">TITLE</b><i class="tm-line w1"></i><i class="tm-line w2"></i></span></span>
+            <span class="name" data-copy="titles.color"></span>
+          </button>
+          <button class="spec" data-value="Titles a different style">
+            <span class="sample"><span class="titlemock"><b class="tm-title">TITLE</b><i class="tm-line w1"></i><i class="tm-line w2"></i></span></span>
+            <span class="name" data-copy="titles.style"></span>
+          </button>
+          <button class="spec" data-value="Titles different in color and style">
+            <span class="sample"><span class="titlemock"><b class="tm-title">TITLE</b><i class="tm-line w1"></i><i class="tm-line w2"></i></span></span>
+            <span class="name" data-copy="titles.both"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card aes">
+      <h3 data-copy="font.title"></h3>
+      <div class="field">
+        <label class="label"><span data-copy="font.case.label"></span> <span class="sub" data-copy="font.case.hint"></span></label>
+        <div class="specimens" data-group="case">
+          <button class="spec" data-value="ALL CAPS">
+            <span class="sample"><span class="sm-caps" data-copy="font.case.sample"></span></span>
+            <span class="name" data-copy="font.case.caps"></span>
+          </button>
+          <button class="spec" data-value="lower-case">
+            <span class="sample"><span class="sm-lower" data-copy="font.case.sample"></span></span>
+            <span class="name" data-copy="font.case.lower"></span>
+          </button>
+          <button class="spec" data-value="Sentence case">
+            <span class="sample"><span class="sm-sentence" data-copy="font.case.sample"></span></span>
+            <span class="name" data-copy="font.case.sentence"></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label"><span data-copy="font.family.label"></span> <span class="sub" data-copy="font.family.hint"></span></label>
+        <div class="specimens" data-group="family">
+          <button class="spec" data-value="Serif">
+            <span class="sample"><span class="sm-aa sm-serif">Aa</span></span>
+            <span class="name" data-copy="font.family.serif"></span>
+          </button>
+          <button class="spec" data-value="Sans-serif">
+            <span class="sample"><span class="sm-aa">Aa</span></span>
+            <span class="name" data-copy="font.family.sans"></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:0">
+        <label class="label" data-copy="font.source.label"></label>
+        <div class="specimens" data-group="source">
+          <button class="spec" data-value="Handwritten">
+            <span class="sample"><svg class="sm-hand" viewBox="0 0 120 62" aria-hidden="true"><path d="M11 55 Q 21 31 31 9 Q 40 32 50 55"/><path d="M18 41 Q 31 37.5 44 41"/><path d="M89 33 Q 89 24 78.5 24 Q 65 24.5 65 39.5 Q 65 54 78 53.5 Q 88.5 53 89 44"/><path d="M89.5 24 Q 90.5 41 90 55"/></svg></span>
+            <span class="name" data-copy="font.source.hand"></span>
+          </button>
+          <button class="spec" data-value="Traced over type">
+            <span class="sample"><span class="sm-trace">Aa</span></span>
+            <span class="name" data-copy="font.source.trace"></span>
+          </button>
+          <button class="spec" data-value="Premade font">
+            <span class="sample"><span class="sm-aa">Aa</span></span>
+            <span class="name" data-copy="font.source.premade"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card aes">
+      <h3 data-copy="texture.title"></h3>
+      <p class="note" data-copy="texture.note"></p>
+      <div class="specimens" data-group="surface">
+        <button class="spec" data-value="Textured">
+          <span class="sample bleed"><svg class="sm-full" viewBox="0 0 180 92" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <defs>
+              <filter id="grainTex"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+              <pattern id="gridPat" width="11" height="11" patternUnits="userSpaceOnUse"><path d="M11 0 H0 V11" fill="none" stroke="#8FA0B8" stroke-width="1"/></pattern>
+            </defs>
+            <rect width="180" height="92" fill="#FBF6EC"/>
+            <rect width="180" height="92" fill="url(#gridPat)" opacity=".45"/>
+            <rect width="180" height="92" filter="url(#grainTex)" opacity=".2"/>
+            <g class="tex-mark"><circle cx="62" cy="46" r="15"/><path d="M83 46 h30"/><path d="M105 39 l8 7 -8 7"/></g>
+          </svg></span>
+          <span class="name" data-copy="texture.with"></span>
+        </button>
+        <button class="spec" data-value="Smooth">
+          <span class="sample bleed"><svg class="sm-full" viewBox="0 0 180 92" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <rect width="180" height="92" fill="#FBF6EC"/>
+            <g class="tex-mark"><circle cx="62" cy="46" r="15"/><path d="M83 46 h30"/><path d="M105 39 l8 7 -8 7"/></g>
+          </svg></span>
+          <span class="name" data-copy="texture.without"></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="card aes">
+      <h3 data-copy="tool.title"></h3>
+      <div class="choices" data-group="tool">
+        <button class="choice" data-value="Procreate" data-copy="tool.procreate"></button>
+        <button class="choice" data-value="Figma" data-copy="tool.figma"></button>
+        <button class="choice" data-value="Canva" data-copy="tool.canva"></button>
+        <button class="choice" data-value="Pen and paper" data-copy="tool.paper"></button>
+        <button class="choice" data-value="Other" data-copy="tool.other"></button>
+      </div>
+      <div class="reveal" id="toolOtherWrap">
+        <input type="text" id="fToolOther" data-copy-ph="tool.otherPh">
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · VOICE -->
+  <section class="screen" data-screen="2">
+    <h2 class="voi" data-copy="voi.h2"></h2>
+    <p class="lede" data-copy="voi.lede"></p>
+    <div class="hint voi" data-copy="voi.hint"></div>
+
+    <div class="card voi">
+      <h3 data-copy="voi.dial.title"></h3>
+      <div class="dial" data-accent="green">
+        <div class="dial-ends"><span data-copy="voi.dial.left"></span><span data-copy="voi.dial.right"></span></div>
+        <input type="range" id="dVoice" min="0" max="100" value="50" step="1" aria-label="Voice">
+        <div class="dial-ticks"><i></i><i></i><i></i><i></i><i></i></div>
+        <p class="dial-read" id="rVoice"></p>
+      </div>
+    </div>
+
+    <div class="card voi">
+      <div class="field" style="margin-bottom:0">
+        <label class="label" for="fAuthors"><span data-copy="voi.authors.label"></span> <span class="sub" data-copy="voi.authors.hint"></span></label>
+        <textarea id="fAuthors" data-copy-ph="voi.authors.ph"></textarea>
+      </div>
+    </div>
+
+    <div class="card voi">
+      <h3 data-copy="voi.sound.title"></h3>
+      <div class="field">
+        <label class="label" data-copy="voi.formality.label"></label>
+        <div class="choices" data-group="formality">
+          <button class="choice" data-value="Casual" data-copy="voi.casual"></button>
+          <button class="choice" data-value="Formal" data-copy="voi.formal"></button>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label" data-copy="voi.worldview.label"></label>
+        <div class="choices" data-group="worldview">
+          <button class="choice" data-value="Cynic" data-copy="voi.cynic"></button>
+          <button class="choice" data-value="Romantic" data-copy="voi.romantic"></button>
+          <button class="choice" data-value="Idealist" data-copy="voi.idealist"></button>
+          <button class="choice" data-value="Realist" data-copy="voi.realist"></button>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label class="label" data-copy="voi.delivery.label"></label>
+        <div class="choices" data-group="delivery">
+          <button class="choice" data-value="Reassuring" data-copy="voi.reassuring"></button>
+          <button class="choice" data-value="Tough love" data-copy="voi.toughlove"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · AVATAR -->
+  <section class="screen" data-screen="3">
+    <h2 class="ava" data-copy="ava.h2"></h2>
+    <p class="lede" data-copy="ava.lede"></p>
+    <div class="hint ava" data-copy="ava.hint"></div>
+
+    <div class="card ava">
+      <h3 data-copy="ava.dial.title"></h3>
+      <div class="dial" data-accent="blue">
+        <div class="dial-ends"><span data-copy="ava.dial.left"></span><span data-copy="ava.dial.right"></span></div>
+        <input type="range" id="dAvatar" min="0" max="100" value="50" step="1" aria-label="Avatar">
+        <div class="dial-ticks"><i></i><i></i><i></i><i></i><i></i></div>
+        <p class="dial-read" id="rAvatar"></p>
+      </div>
+    </div>
+
+    <div class="card ava">
+      <h3 data-copy="ava.sketch.title"></h3>
+      <div class="drop" id="drop">
+        <p data-copy="ava.drop.title"></p>
+        <small><span data-copy="ava.drop.or"></span> <button class="btn-link" id="browseBtn" type="button" data-copy="ava.drop.browse"></button> · <span data-copy="ava.drop.note"></span></small>
+        <input type="file" id="fileInput" accept="image/*" hidden>
+      </div>
+      <div class="avatar-preview" id="avatarPreview" style="margin-top:16px">
+        <img id="avatarImg" alt="Your avatar sketch">
+        <div>
+          <button class="btn btn-ghost btn-sm" id="replaceBtn" type="button" data-copy="ava.replace"></button>
+          <button class="btn btn-ghost btn-sm" id="removeBtn" type="button" data-copy="ava.remove"></button>
+        </div>
+      </div>
+      <div class="field" style="margin-top:22px">
+        <label class="label" data-copy="ava.kind.label"></label>
+        <div class="choices" data-group="avatarKind">
+          <button class="choice" data-value="Human" data-copy="ava.kind.human"></button>
+          <button class="choice" data-value="Animal" data-copy="ava.kind.animal"></button>
+          <button class="choice" data-value="Robot" data-copy="ava.kind.robot"></button>
+          <button class="choice" data-value="Shape" data-copy="ava.kind.shape"></button>
+          <button class="choice" data-value="Object" data-copy="ava.kind.object"></button>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label class="label" for="fAvatarNote"><span data-copy="ava.note.label"></span> <span class="sub" data-copy="ava.note.hint"></span></label>
+        <input type="text" id="fAvatarNote" data-copy-ph="ava.note.ph">
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · CARD -->
+  <section class="screen" data-screen="4">
+    <p class="eyebrow ovr" data-copy="card.eyebrow"></p>
+    <h2 class="sentence" data-copy="card.h2"></h2>
+    <p class="lede" data-copy="card.lede"></p>
+
+    <div class="result-actions">
+      <button class="btn btn-primary" id="downloadBtn" type="button" data-copy="card.btn.download"></button>
+      <button class="btn btn-ghost" id="copyBtn" type="button" data-copy="card.btn.copy"></button>
+      <button class="btn btn-ghost" id="restartBtn" type="button" data-copy="card.btn.restart"></button>
+    </div>
+
+    <canvas id="cardCanvas" width="1600" height="1120" role="img" aria-label="Your creative accent card"></canvas>
+
+    <div class="card" style="margin-top:18px">
+      <h3 data-copy="card.brief.title"></h3>
+      <div class="brief" id="briefText"></div>
+    </div>
+  </section>
+
+  <p class="foot" data-copy="app.footer"></p>
+</main>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <span class="step-nav"><button class="btn btn-ghost" id="backBtn" type="button" data-copy="nav.back"></button></span>
+    <span class="counter" id="navCounter"></span>
+    <span class="spacer"></span>
+    <span class="step-nav"><button class="btn btn-primary" id="nextBtn" type="button"></button></span>
+    <button class="btn btn-primary" id="flatCardBtn" type="button" style="display:none" data-copy="nav.downloadFlat"></button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="./copy.js"></script>
+<script>
+(function(){
+"use strict";
+
+var C = window.COPY || {};
+function t(key){ return C[key] !== undefined ? C[key] : ("[" + key + "]"); }
+function stripTags(s){ return String(s).replace(/<[^>]*>/g, ""); }
+
+/* ------------------------------------------------------------------ *
+ * Config
+ * ------------------------------------------------------------------ */
+var SCREENS = ["step.overview","step.aesthetics","step.voice","step.avatar","step.card"];
+var STEP_COLORS = ["#0E1626","#E15A3C","#00A97A","#2C7FEF","#0E1626"];
+var ACCENTS = {
+  neutral:{knob:"#0E1626",track:"#DCE6F4"},
+  coral:{knob:"#E15A3C",track:"#F7DED7"},
+  green:{knob:"#00A97A",track:"#CFEDE2"},
+  blue:{knob:"#2C7FEF",track:"#D5E5FC"}
+};
+var COLOR_SLOTS = [
+  {key:"background", copy:"colors.background", def:"#FFFFFF"},
+  {key:"dominant",   copy:"colors.dominant",   def:"#0E1626"},
+  {key:"accent",     copy:"colors.accent",     def:"#E15A3C"},
+  {key:"other1",     copy:"colors.other",      def:"#00A97A"},
+  {key:"other2",     copy:"colors.other",      def:"#2C7FEF"},
+  {key:"other3",     copy:"colors.other",      def:"#F2C94C"}
+];
+function readings(prefix){
+  return [1,2,3,4,5].map(function(n){ return t(prefix + ".read" + n); });
+}
+
+var state = {
+  name:"", dials:{overall:50, aesthetics:50, voice:50, avatar:50},
+  goal:[], goalOther:"", colors:{},
+  fills:"", titles:"", case:"", family:"", source:"", surface:"", tool:"", toolOther:"",
+  formality:"", worldview:"", delivery:"", authors:"",
+  avatarKind:"", avatarNote:"", avatarData:null
+};
+COLOR_SLOTS.forEach(function(s){ state.colors[s.key] = s.def; });
+
+var current = 0, flat = false, avatarImage = null;
+
+/* ------------------------------------------------------------------ *
+ * Storage
+ * ------------------------------------------------------------------ */
+var KEY = "cai.v2";
+function save(){ try{ window.localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+function load(){
+  try{
+    var raw = window.localStorage.getItem(KEY); if(!raw) return;
+    var p = JSON.parse(raw);
+    Object.keys(p).forEach(function(k){ if(k in state) state[k] = p[k]; });
+  }catch(e){}
+}
+
+/* ------------------------------------------------------------------ *
+ * Helpers
+ * ------------------------------------------------------------------ */
+function $(s,r){ return (r||document).querySelector(s); }
+function $$(s,r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); }
+
+var toastTimer;
+function toast(msg){
+  var el = $("#toast"); el.textContent = msg; el.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ el.classList.remove("on"); }, 1800);
+}
+function band(v){ return v<=12?0 : v<=37?1 : v<=62?2 : v<=87?3 : 4; }
+function toolLabel(){
+  if(state.tool === "Other") return state.toolOther || t("tool.other");
+  return state.tool || "";
+}
+function goalList(){
+  return (state.goal || []).map(function(g){
+    return g === "Other" ? (state.goalOther || t("aud.other")) : g;
+  });
+}
+
+/* ------------------------------------------------------------------ *
+ * Apply copy
+ * ------------------------------------------------------------------ */
+function applyCopy(){
+  $$("[data-copy]").forEach(function(el){
+    el.innerHTML = t(el.getAttribute("data-copy"));
+  });
+  $$("[data-copy-ph]").forEach(function(el){
+    el.setAttribute("placeholder", stripTags(t(el.getAttribute("data-copy-ph"))));
+  });
+  document.title = t("app.brandTitle") + " · " + stripTags(t("app.brandSub"));
+}
+
+/* ------------------------------------------------------------------ *
+ * Build
+ * ------------------------------------------------------------------ */
+function buildSteps(){
+  var nav = $("#steps"); nav.innerHTML = "";
+  SCREENS.forEach(function(key,i){
+    var b = document.createElement("button");
+    b.className = "step-dot"; b.type = "button"; b.textContent = t(key);
+    b.addEventListener("click", function(){
+      if(flat){
+        var target = $('[data-screen="'+i+'"]');
+        if(target) target.scrollIntoView({behavior:"smooth", block:"start"});
+      }else{ goTo(i); }
+    });
+    nav.appendChild(b);
+  });
+}
+
+function buildSwatches(){
+  var wrap = $("#swatches"); wrap.innerHTML = "";
+  COLOR_SLOTS.forEach(function(slot){
+    var el = document.createElement("label");
+    el.className = "sw";
+    var id = "col-" + slot.key;
+    el.innerHTML =
+      '<input type="color" id="'+id+'" value="'+state.colors[slot.key]+'" aria-label="'+t(slot.copy)+'">' +
+      '<span class="sw-meta"><span class="sw-name">'+t(slot.copy)+'</span>' +
+      '<span class="sw-hex" data-hex="'+slot.key+'">'+state.colors[slot.key].toUpperCase()+'</span></span>';
+    wrap.appendChild(el);
+    $("#"+id, el).addEventListener("input", function(e){
+      state.colors[slot.key] = e.target.value;
+      $('[data-hex="'+slot.key+'"]', el).textContent = e.target.value.toUpperCase();
+      syncPalette(); save();
+    });
+  });
+}
+
+function wireDial(inputId, readId, key, accent, copyPrefix){
+  var input = $("#"+inputId), read = $("#"+readId);
+  var dial = input.closest(".dial"), a = ACCENTS[accent];
+  var lines = readings(copyPrefix);
+  dial.style.setProperty("--knob", a.knob);
+  dial.style.setProperty("--track", a.track);
+  function render(){
+    var v = Number(input.value);
+    state.dials[key] = v;
+    read.textContent = lines[band(v)];
+  }
+  input.addEventListener("input", function(){ render(); save(); });
+  input.value = state.dials[key];
+  render();
+}
+
+function wireChoices(){
+  $$("[data-group]").forEach(function(group){
+    var key = group.getAttribute("data-group");
+    var multi = group.getAttribute("data-multi") === "true";
+    $$(".spec, .choice", group).forEach(function(btn){
+      var val = btn.getAttribute("data-value");
+      btn.type = "button";
+      btn.setAttribute("aria-pressed","false");
+      btn.addEventListener("click", function(){
+        if(multi){
+          var list = state[key] || [], i = list.indexOf(val);
+          if(i > -1) list.splice(i,1); else list.push(val);
+          state[key] = list;
+        }else{
+          state[key] = (state[key] === val) ? "" : val;
+        }
+        syncChoices(); save();
+      });
+    });
+  });
+  syncChoices();
+}
+
+function syncChoices(){
+  $$("[data-group]").forEach(function(group){
+    var key = group.getAttribute("data-group");
+    var multi = group.getAttribute("data-multi") === "true";
+    $$(".spec, .choice", group).forEach(function(btn){
+      var val = btn.getAttribute("data-value");
+      var on = multi ? (state[key]||[]).indexOf(val) > -1 : state[key] === val;
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  });
+  $("#toolOtherWrap").classList.toggle("on", state.tool === "Other");
+  $("#goalOtherWrap").classList.toggle("on", (state.goal||[]).indexOf("Other") > -1);
+}
+
+/* Mirror the student's palette into CSS vars so the Fills, Titles and
+   Texture specimens preview in their own colors. */
+function syncPalette(){
+  var r = document.documentElement.style;
+  r.setProperty("--c-bg", state.colors.background);
+  r.setProperty("--c-dominant", state.colors.dominant);
+  r.setProperty("--c-accent", state.colors.accent);
+}
+
+function wireText(id, key){
+  var el = $("#"+id);
+  el.value = state[key] || "";
+  el.addEventListener("input", function(){ state[key] = el.value; save(); });
+}
+
+/* ------------------------------------------------------------------ *
+ * Avatar
+ * ------------------------------------------------------------------ */
+function setAvatar(dataUrl){
+  state.avatarData = dataUrl;
+  var img = $("#avatarImg"), prev = $("#avatarPreview");
+  if(!dataUrl){
+    avatarImage = null; prev.classList.remove("on");
+    $("#drop").style.display = ""; save(); return;
+  }
+  img.src = dataUrl;
+  prev.classList.add("on");
+  $("#drop").style.display = "none";
+  var probe = new Image();
+  probe.onload = function(){ avatarImage = probe; };
+  probe.src = dataUrl;
+  save();
+}
+function readFile(file){
+  if(!file || !/^image\//.test(file.type)){ toast(t("msg.notImage")); return; }
+  if(file.size > 6 * 1024 * 1024){ toast(t("msg.tooBig")); return; }
+  var reader = new FileReader();
+  reader.onload = function(e){ setAvatar(e.target.result); toast(t("msg.avatarAdded")); };
+  reader.readAsDataURL(file);
+}
+function wireAvatar(){
+  var drop = $("#drop"), input = $("#fileInput");
+  $("#browseBtn").addEventListener("click", function(){ input.click(); });
+  $("#replaceBtn").addEventListener("click", function(){ input.click(); });
+  $("#removeBtn").addEventListener("click", function(){ setAvatar(null); input.value=""; });
+  input.addEventListener("change", function(e){ readFile(e.target.files[0]); });
+  drop.addEventListener("click", function(e){ if(e.target === drop || e.target.tagName === "P") input.click(); });
+  ["dragenter","dragover"].forEach(function(ev){
+    drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add("over"); });
+  });
+  ["dragleave","drop"].forEach(function(ev){
+    drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove("over"); });
+  });
+  drop.addEventListener("drop", function(e){
+    if(e.dataTransfer && e.dataTransfer.files.length) readFile(e.dataTransfer.files[0]);
+  });
+  if(state.avatarData) setAvatar(state.avatarData);
+}
+
+/* ------------------------------------------------------------------ *
+ * Navigation
+ * ------------------------------------------------------------------ */
+function goTo(i){
+  if(flat) return;
+  current = Math.max(0, Math.min(SCREENS.length - 1, i));
+  $$(".screen").forEach(function(s){
+    s.classList.toggle("active", Number(s.getAttribute("data-screen")) === current);
+  });
+  $$(".step-dot").forEach(function(d,idx){
+    d.setAttribute("aria-current", idx === current ? "true" : "false");
+    d.classList.toggle("done", idx < current);
+    d.style.background = idx === current ? STEP_COLORS[current] : "";
+    d.style.borderColor = idx === current ? STEP_COLORS[current] : "";
+  });
+  $("#progressFill").style.width = (current / (SCREENS.length - 1) * 100) + "%";
+  $("#progressFill").style.background = STEP_COLORS[current];
+  $("#backBtn").disabled = current === 0;
+  $("#nextBtn").style.display = current === SCREENS.length - 1 ? "none" : "";
+  $("#nextBtn").textContent = current === SCREENS.length - 2 ? t("nav.finish") : t("nav.next");
+  $("#navCounter").textContent = t("nav.stepCounter")
+    .replace("{n}", current + 1).replace("{total}", SCREENS.length);
+  window.scrollTo({top:0, behavior:"smooth"});
+  if(current === SCREENS.length - 1){ drawCard(); renderBrief(); }
+}
+
+function setFlat(on){
+  flat = on;
+  document.body.classList.toggle("flat", on);
+  $("#viewToggle").textContent = on ? t("app.viewToggleClose") : t("app.viewToggleOpen");
+  $$(".step-nav").forEach(function(el){ el.style.display = on ? "none" : ""; });
+  $("#flatCardBtn").style.display = on ? "" : "none";
+  if(on){
+    $("#progressFill").style.width = "100%";
+    $("#progressFill").style.background = "#0E1626";
+    $("#navCounter").textContent = "";
+    $$(".step-dot").forEach(function(d){
+      d.setAttribute("aria-current","false"); d.classList.remove("done");
+      d.style.background = ""; d.style.borderColor = "";
+    });
+    drawCard(); renderBrief();
+  }else{ goTo(current); }
+}
+
+/* ------------------------------------------------------------------ *
+ * Brief
+ * ------------------------------------------------------------------ */
+function track(v){
+  var W = 21, pos = Math.round(v/100 * (W-1)), s = "";
+  for(var i=0;i<W;i++) s += (i === pos ? "●" : "─");
+  return s;
+}
+function pad(s,n){ s = String(s); while(s.length < n) s += " "; return s; }
+function styleTags(){
+  return [state.case, state.family, state.source, state.surface, state.fills, state.titles].filter(Boolean);
+}
+function voiceTags(){
+  return [state.formality, state.worldview, state.delivery].filter(Boolean);
+}
+
+function renderBrief(){
+  var d = state.dials, L = [];
+  var W = 13;
+  var EMPTY = t("common.empty");
+  var lefts = [t("overview.dial.left"), t("aes.dial.left"), t("voi.dial.left"), t("ava.dial.left")];
+  var LW = Math.max.apply(null, lefts.map(function(s){ return s.length; }));
+  function lp(s){ return pad(s, LW); }
+  L.push(t("brief.heading") + (state.name ? " · " + state.name : ""));
+  L.push(t("brief.subheading"));
+  L.push("");
+  L.push(pad(t("brief.overall"), W) + lp(t("overview.dial.left")) + " " + track(d.overall) + " " + t("overview.dial.right"));
+  L.push(pad("", W) + readings("overall")[band(d.overall)]);
+  L.push("");
+  L.push(pad(t("brief.aesthetics"), W) + lp(t("aes.dial.left")) + " " + track(d.aesthetics) + " " + t("aes.dial.right"));
+  L.push(pad("", W) + readings("aes")[band(d.aesthetics)]);
+  L.push(pad("  " + t("brief.palette"), W) + COLOR_SLOTS.map(function(s){ return t(s.copy) + " " + state.colors[s.key].toUpperCase(); }).join(", "));
+  L.push(pad("  " + t("brief.type"), W) + (styleTags().length ? styleTags().join(" · ") : EMPTY));
+  L.push(pad("  " + t("brief.tool"), W) + (toolLabel() || EMPTY));
+  L.push("");
+  L.push(pad(t("brief.voice"), W) + lp(t("voi.dial.left")) + " " + track(d.voice) + " " + t("voi.dial.right"));
+  L.push(pad("", W) + readings("voi")[band(d.voice)]);
+  if(state.authors) L.push(pad("  " + t("brief.readslike"), W) + state.authors.replace(/\n+/g, " / "));
+  L.push(pad("  " + t("brief.sounds"), W) + (voiceTags().length ? voiceTags().join(" · ") : EMPTY));
+  L.push("");
+  L.push(pad(t("brief.avatar"), W) + lp(t("ava.dial.left")) + " " + track(d.avatar) + " " + t("ava.dial.right"));
+  L.push(pad("", W) + readings("ava")[band(d.avatar)]);
+  if(state.avatarKind) L.push(pad("  " + t("brief.kind"), W) + state.avatarKind);
+  if(state.avatarNote) L.push(pad("  " + t("brief.detail"), W) + state.avatarNote);
+  L.push("");
+  if(goalList().length) L.push(pad(t("brief.madefor"), W) + goalList().join(", "));
+  L.push("");
+  L.push(t("brief.tagline"));
+  $("#briefText").textContent = L.join("\n");
+}
+
+/* ------------------------------------------------------------------ *
+ * Canvas card
+ * ------------------------------------------------------------------ */
+var F = 'Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+function wrapText(ctx,text,x,y,maxW,lineH,maxLines){
+  var words = String(text).split(/\s+/), line = "", lines = [];
+  for(var i=0;i<words.length;i++){
+    var test = line ? line + " " + words[i] : words[i];
+    if(ctx.measureText(test).width > maxW && line){ lines.push(line); line = words[i]; }
+    else line = test;
+  }
+  if(line) lines.push(line);
+  if(maxLines && lines.length > maxLines){
+    lines = lines.slice(0,maxLines);
+    lines[maxLines-1] = lines[maxLines-1].replace(/\s\S*$/,"") + "…";
+  }
+  lines.forEach(function(l,i){ ctx.fillText(l, x, y + i*lineH); });
+  return lines.length * lineH;
+}
+function drawDialRow(ctx,o){
+  ctx.fillStyle = "#0E1626"; ctx.font = '700 20px ' + F; ctx.textAlign = "left";
+  ctx.fillText(o.label, o.x, o.y);
+  ctx.fillStyle = "#6B7A91"; ctx.font = '500 17px ' + F;
+  ctx.fillText(o.left, o.x, o.y + 56);
+  ctx.textAlign = "right"; ctx.fillText(o.right, o.x + o.w, o.y + 56); ctx.textAlign = "left";
+  var trackY = o.y + 26, tx = o.x, tw = o.w;
+  ctx.fillStyle = "#E3EBF6"; roundRect(ctx, tx, trackY - 4, tw, 8, 4); ctx.fill();
+  var px = tx + (tw - 26) * (o.value/100);
+  ctx.fillStyle = o.color;
+  roundRect(ctx, tx, trackY - 4, Math.max(8, px + 13 - tx), 8, 4); ctx.fill();
+  roundRect(ctx, px, trackY - 13, 26, 26, 9); ctx.fill();
+  ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 3;
+  roundRect(ctx, px, trackY - 13, 26, 26, 9); ctx.stroke();
+}
+function drawTagRow(ctx, tags, x, y, maxW, color, bg){
+  var cx = x, cy = y, h = 38, gap = 9, rowH = 48, rows = 1;
+  ctx.font = '600 17px ' + F;
+  tags.forEach(function(tag){
+    var w = ctx.measureText(tag).width + 30;
+    if(cx + w > x + maxW){ cx = x; cy += rowH; rows++; }
+    ctx.fillStyle = bg; roundRect(ctx, cx, cy, w, h, 19); ctx.fill();
+    ctx.fillStyle = color; ctx.textAlign = "left";
+    ctx.fillText(tag, cx + 15, cy + 25);
+    cx += w + gap;
+  });
+  return rows * rowH;
+}
+
+function drawCard(){
+  var c = $("#cardCanvas"), ctx = c.getContext("2d");
+  var W = c.width, H = c.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = "#EAF2FE"; ctx.fillRect(0,0,W,H);
+
+  var M = 64;
+  ctx.fillStyle = "#FFFFFF"; roundRect(ctx, M, M, W-M*2, H-M*2, 24); ctx.fill();
+  ctx.strokeStyle = "#D9E4F3"; ctx.lineWidth = 2;
+  roundRect(ctx, M, M, W-M*2, H-M*2, 24); ctx.stroke();
+
+  var PAD = 56, L = M + PAD, colW = 700, R = M + PAD + 780, rColW = W - M - PAD - R;
+
+  ctx.textAlign = "left";
+  ctx.fillStyle = "#6B7A91"; ctx.font = '800 15px ' + F;
+  ctx.fillText(t("png.eyebrow"), L, M + 58);
+  ctx.fillStyle = "#0E1626"; ctx.font = '800 46px ' + F;
+  ctx.fillText(t("png.title"), L, M + 112);
+  if(state.name){
+    ctx.fillStyle = "#4B5B72"; ctx.font = '500 22px ' + F;
+    ctx.fillText(state.name, L, M + 148);
+  }
+  ctx.strokeStyle = "#E7EEF8"; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(L, M + 174); ctx.lineTo(W - M - PAD, M + 174); ctx.stroke();
+
+  var y = M + 236;
+  drawDialRow(ctx,{x:L,y:y,w:colW,label:t("png.dial.overall"),left:t("overview.dial.left"),right:t("overview.dial.right"),value:state.dials.overall,color:"#0E1626"}); y += 128;
+  drawDialRow(ctx,{x:L,y:y,w:colW,label:t("png.dial.aesthetics"),left:t("aes.dial.left"),right:t("aes.dial.right"),value:state.dials.aesthetics,color:"#E15A3C"}); y += 128;
+  drawDialRow(ctx,{x:L,y:y,w:colW,label:t("png.dial.voice"),left:t("voi.dial.left"),right:t("voi.dial.right"),value:state.dials.voice,color:"#00A97A"}); y += 128;
+  drawDialRow(ctx,{x:L,y:y,w:colW,label:t("png.dial.avatar"),left:t("ava.dial.left"),right:t("ava.dial.right"),value:state.dials.avatar,color:"#2C7FEF"}); y += 116;
+
+  ctx.fillStyle = "#0E1626"; ctx.font = '700 20px ' + F;
+  ctx.fillText(t("png.palette"), L, y);
+  var sx = L, sy = y + 20, ss = 60;
+  COLOR_SLOTS.forEach(function(slot,i){
+    ctx.fillStyle = state.colors[slot.key];
+    roundRect(ctx, sx + i*(ss+12), sy, ss, ss, 12); ctx.fill();
+    ctx.strokeStyle = "rgba(14,22,38,.18)"; ctx.lineWidth = 2;
+    roundRect(ctx, sx + i*(ss+12), sy, ss, ss, 12); ctx.stroke();
+  });
+  ctx.fillStyle = "#6B7A91"; ctx.font = '500 15px ' + F;
+  ctx.fillText(t("png.palette.caption"), L, sy + ss + 28);
+
+  var ry = M + 236;
+  ctx.fillStyle = "#0E1626"; ctx.font = '700 20px ' + F;
+  ctx.fillText(t("png.avatar"), R, ry - 34);
+  var box = rColW, boxH = 250;
+  ctx.fillStyle = "#F7FAFF"; roundRect(ctx, R, ry - 14, box, boxH, 16); ctx.fill();
+  ctx.strokeStyle = "#D9E4F3"; ctx.lineWidth = 2;
+  roundRect(ctx, R, ry - 14, box, boxH, 16); ctx.stroke();
+  if(avatarImage && avatarImage.width){
+    var iw = avatarImage.width, ih = avatarImage.height;
+    var scale = Math.min((box-40)/iw, (boxH-40)/ih);
+    ctx.drawImage(avatarImage, R + (box - iw*scale)/2, ry - 14 + (boxH - ih*scale)/2, iw*scale, ih*scale);
+  }else{
+    ctx.fillStyle = "#B9CDE8"; ctx.font = '600 17px ' + F; ctx.textAlign = "center";
+    ctx.fillText(t("png.avatar.empty"), R + box/2, ry - 14 + boxH/2 + 6);
+    ctx.textAlign = "left";
+  }
+
+  var ay = ry + boxH + 8;
+  var avDesc = [state.avatarKind, state.avatarNote].filter(Boolean).join(" · ");
+  if(avDesc){
+    ctx.fillStyle = "#4B5B72"; ctx.font = '500 17px ' + F;
+    ay += wrapText(ctx, avDesc, R, ay + 12, box, 24, 3) + 4;
+  }
+
+  ay += 34;
+  ctx.fillStyle = "#0E1626"; ctx.font = '700 20px ' + F;
+  ctx.fillText(t("png.style"), R, ay);
+  var st = styleTags(); if(toolLabel()) st = st.concat([toolLabel()]);
+  ay += drawTagRow(ctx, st.length ? st : [t("common.empty")], R, ay + 14, box, "#B0432A", "#FBEAE5") + 44;
+
+  ctx.fillStyle = "#0E1626"; ctx.font = '700 20px ' + F;
+  ctx.fillText(t("png.voice"), R, ay);
+  var vt = voiceTags();
+  ay += drawTagRow(ctx, vt.length ? vt : [t("common.empty")], R, ay + 14, box, "#00795A", "#E0F4EC") + 18;
+
+  if(state.authors){
+    ctx.fillStyle = "#9AAABF"; ctx.font = '700 14px ' + F;
+    ctx.fillText(t("png.readslike"), R, ay);
+    ctx.fillStyle = "#4B5B72"; ctx.font = '500 17px ' + F;
+    ay += wrapText(ctx, state.authors.replace(/\n+/g," / "), R, ay + 26, box, 24, 2) + 34;
+  }
+  if(goalList().length){
+    ctx.fillStyle = "#9AAABF"; ctx.font = '700 14px ' + F;
+    ctx.fillText(t("png.madefor"), R, ay);
+    ctx.fillStyle = "#4B5B72"; ctx.font = '500 17px ' + F;
+    ay += wrapText(ctx, goalList().join(" · "), R, ay + 26, box, 24, 2) + 10;
+  }
+
+  ctx.fillStyle = "#6B7A91"; ctx.font = 'italic 500 18px ' + F; ctx.textAlign = "left";
+  ctx.fillText(t("png.tagline"), L, H - M - 40);
+  ctx.textAlign = "right"; ctx.font = '600 15px ' + F; ctx.fillStyle = "#9AAABF";
+  ctx.fillText(t("png.copyright"), W - M - PAD, H - M - 40);
+  ctx.textAlign = "left";
+}
+
+function download(){
+  drawCard();
+  var c = $("#cardCanvas");
+  var slug = (state.name || "creative-accent").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+  try{
+    c.toBlob(function(blob){
+      var url = URL.createObjectURL(blob), a = document.createElement("a");
+      a.href = url; a.download = slug + "-accent-card.png";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+      toast(t("msg.downloaded"));
+    }, "image/png");
+  }catch(e){
+    var a2 = document.createElement("a");
+    a2.href = c.toDataURL("image/png");
+    a2.download = slug + "-accent-card.png"; a2.click();
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Init
+ * ------------------------------------------------------------------ */
+load();
+applyCopy();
+buildSteps();
+buildSwatches();
+wireDial("dOverall","rOverall","overall","neutral","overall");
+wireDial("dAesthetics","rAesthetics","aesthetics","coral","aes");
+wireDial("dVoice","rVoice","voice","green","voi");
+wireDial("dAvatar","rAvatar","avatar","blue","ava");
+wireChoices();
+syncPalette();
+wireText("fName","name");
+wireText("fAuthors","authors");
+wireText("fAvatarNote","avatarNote");
+wireText("fToolOther","toolOther");
+wireText("fGoalOther","goalOther");
+wireAvatar();
+
+$("#nextBtn").addEventListener("click", function(){ goTo(current + 1); });
+$("#backBtn").addEventListener("click", function(){ goTo(current - 1); });
+$("#downloadBtn").addEventListener("click", download);
+$("#flatCardBtn").addEventListener("click", download);
+$("#viewToggle").addEventListener("click", function(){ setFlat(!flat); });
+$("#copyBtn").addEventListener("click", function(){
+  var txt = $("#briefText").textContent;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(
+      function(){ toast(t("msg.copied")); },
+      function(){ toast(t("msg.copyFailed")); });
+  }else{ toast(t("msg.copyFailed")); }
+});
+$("#restartBtn").addEventListener("click", function(){
+  if(!window.confirm(t("card.confirmRestart"))) return;
+  try{ window.localStorage.removeItem(KEY); }catch(e){}
+  window.location.reload();
+});
+document.addEventListener("keydown", function(e){
+  if(flat) return;
+  if(e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+  if(e.key === "ArrowRight") goTo(current + 1);
+  if(e.key === "ArrowLeft") goTo(current - 1);
+});
+
+setFlat(false);
+window.CAI = {state:state, drawCard:drawCard, goTo:goTo, setFlat:setFlat, copy:C};
+})();
+</script>
+</body>
+</html>

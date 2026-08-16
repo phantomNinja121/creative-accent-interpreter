@@ -1,0 +1,7 @@
+node_modules/
+shot-*.png
+crop-*.png
+dev-*.png
+pg-*.jpg
+*.pdf
+.DS_Store

@@ -301,7 +301,7 @@ textarea{resize:vertical;min-height:96px}
 .avatar-preview div{display:flex;gap:var(--s2)}
 
 /* ---------- buttons ---------- */
-.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;border-radius:12px;padding:0 22px;font-size:15px;font-weight:700;letter-spacing:-.005em;border:1px solid transparent;transition:background-color .12s,border-color .12s,transform .08s}
+.btn{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;min-height:46px;border-radius:12px;padding:0 22px;font-size:15px;font-weight:700;letter-spacing:-.005em;border:1px solid transparent;transition:background-color .12s,border-color .12s,transform .08s}
 .btn:active{transform:translateY(1px)}
 .btn-primary{background:var(--ink);color:#fff}
 .btn-primary:hover{background:#25324A}
@@ -312,9 +312,10 @@ textarea{resize:vertical;min-height:96px}
 .btn-sm{min-height:38px;padding:0 14px;font-size:14px;border-radius:10px}
 
 .navbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.86);backdrop-filter:saturate(1.6) blur(12px);-webkit-backdrop-filter:saturate(1.6) blur(12px);border-top:1px solid var(--line)}
-.navbar-inner{max-width:820px;margin:0 auto;padding:12px 24px calc(12px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:var(--s3)}
-.navbar .spacer{flex:1}
-.navbar .counter{font-size:13px;font-weight:600;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.navbar-inner{max-width:820px;margin:0 auto;padding:12px 24px calc(12px + env(safe-area-inset-bottom));display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:var(--s3)}
+.nav-left{justify-self:start}
+.nav-right{justify-self:end;display:flex;gap:var(--s2)}
+.steps-bottom{background:var(--well)}
 #backBtn.is-hidden{visibility:hidden}
 
 /* ---------- card screen ---------- */
@@ -346,6 +347,10 @@ body.flat .screen + .screen{margin-top:var(--s8);padding-top:var(--s8);border-to
   .lede{font-size:17px}
   .dial-read{font-size:17.5px}
   .navbar-inner{padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+  .steps-bottom{display:flex;gap:6px;padding:0;background:none;border:0}
+  .steps-bottom .step-dot{font-size:0;width:8px;height:8px;padding:0;background:var(--line-strong);transition:width .25s var(--ease),background-color .2s}
+  .steps-bottom .step-dot.done{background:var(--ink-3)}
+  .steps-bottom .step-dot[aria-current="true"]{width:24px;background:var(--step)}
   .specimens{grid-template-columns:repeat(2,1fr)}
   .picks{grid-template-columns:repeat(3,1fr)}
   .swatches{grid-template-columns:repeat(2,1fr)}
@@ -718,11 +723,12 @@ body.flat .screen + .screen{margin-top:var(--s8);padding-top:var(--s8);border-to
 
 <div class="navbar">
   <div class="navbar-inner">
-    <span class="step-nav"><button class="btn btn-ghost" id="backBtn" type="button" data-copy="nav.back"></button></span>
-    <span class="counter" id="navCounter"></span>
-    <span class="spacer"></span>
-    <span class="step-nav"><button class="btn btn-primary" id="nextBtn" type="button"></button></span>
-    <button class="btn btn-primary" id="flatCardBtn" type="button" style="display:none" data-copy="nav.downloadFlat"></button>
+    <div class="nav-left"><span class="step-nav"><button class="btn btn-ghost" id="backBtn" type="button" data-copy="nav.back"></button></span></div>
+    <nav class="steps steps-bottom" id="stepsBottom" aria-label="Progress"></nav>
+    <div class="nav-right">
+      <span class="step-nav"><button class="btn btn-primary" id="nextBtn" type="button"></button></span>
+      <button class="btn btn-primary" id="flatCardBtn" type="button" style="display:none" data-copy="nav.downloadFlat"></button>
+    </div>
   </div>
 </div>
 
@@ -824,10 +830,14 @@ function applyCopy(){
  * Build
  * ------------------------------------------------------------------ */
 function buildSteps(){
-  var nav = $("#steps"); nav.innerHTML = "";
+  ["#steps", "#stepsBottom"].forEach(function(sel){ buildStepsInto($(sel)); });
+}
+function buildStepsInto(nav){
+  nav.innerHTML = "";
   SCREENS.forEach(function(key,i){
     var b = document.createElement("button");
     b.className = "step-dot"; b.type = "button"; b.textContent = t(key);
+    b.setAttribute("data-i", i);
     b.addEventListener("click", function(){
       if(flat){
         var target = $('[data-screen="'+i+'"]');
@@ -990,7 +1000,8 @@ function goTo(i){
   $$(".screen").forEach(function(s){
     s.classList.toggle("active", Number(s.getAttribute("data-screen")) === current);
   });
-  $$(".step-dot").forEach(function(d,idx){
+  $$(".step-dot").forEach(function(d){
+    var idx = Number(d.getAttribute("data-i"));
     d.setAttribute("aria-current", idx === current ? "true" : "false");
     d.classList.toggle("done", idx < current);
   });
@@ -1000,8 +1011,8 @@ function goTo(i){
   $("#backBtn").tabIndex = current === 0 ? -1 : 0;
   $("#nextBtn").style.display = current === SCREENS.length - 1 ? "none" : "";
   $("#nextBtn").textContent = current === SCREENS.length - 2 ? t("nav.finish") : t("nav.next");
-  $("#navCounter").textContent = t("nav.stepCounter")
-    .replace("{n}", current + 1).replace("{total}", SCREENS.length);
+  $("#stepsBottom").setAttribute("aria-label", stripTags(t("nav.stepCounter"))
+    .replace("{n}", current + 1).replace("{total}", SCREENS.length));
   window.scrollTo({top:0, behavior:"smooth"});
   if(current === SCREENS.length - 1){ renderBrief(); paintCard(); }
 }
@@ -1015,7 +1026,7 @@ function setFlat(on){
   if(on){
     document.documentElement.style.setProperty("--step", STEP_COLORS[0]);
     $("#progressFill").style.width = "100%";
-    $("#navCounter").textContent = "";
+    $("#stepsBottom").setAttribute("aria-label", "Sections");
     $$(".step-dot").forEach(function(d){
       d.setAttribute("aria-current","false"); d.classList.remove("done");
     });

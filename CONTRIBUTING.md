@@ -40,14 +40,27 @@ Colors and type are CSS custom properties in the `:root` block at the top of
 --blue:#2C7FEF;    /* avatar */
 ```
 
-If you change those, update `STEP_COLORS` in the script too, and regenerate
-`og-image.png` and the icons.
+If you change those, update `STEP_COLORS` and `ACCENTS` in the script and
+the matching colors in `drawCard()`, then regenerate `og-image.png` and the
+icons.
+
+Type is Inter (text) and Inter Display (headings), bundled in `fonts/` as
+subset WOFF files. They're registered under the family names "Inter CAI" and
+"Inter CAI Display" so a copy of Inter installed on someone's machine can
+never take over. The canvas card waits for these faces before painting
+(`paintCard()`); always call that rather than `drawCard()` directly, or the
+card can render in a fallback font on a first visit.
+
+Don't add `<link rel="preload">` for the fonts. Preloads are blocked when
+`index.html` is opened straight from disk, which breaks the "just
+double-click it" promise in the README.
 
 ## Changing the card
 
-`drawCard()` is plain Canvas 2D, no library. Coordinates are laid out top to
-bottom in source order, so adding a row usually means bumping the `y` values
-below it. The canvas is 1600x1120; everything is in real pixels.
+`drawCard()` is plain Canvas 2D, no library. The layout is three bands: a
+header, a two-by-two grid of dials, and three detail columns. Coordinates are
+real pixels on a 1600x1240 canvas, laid out top to bottom in source order, so
+moving a band means adjusting the `y` values below it.
 
 ## Testing
 

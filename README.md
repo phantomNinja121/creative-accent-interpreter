@@ -32,9 +32,7 @@ https://YOUR-USERNAME.github.io/creative-accent-interpreter/
 
 That's the link to give students. It works on phones, tablets and laptops.
 
-**4. One small thing to finish**
-
-Open `index.html` on GitHub, click the pencil icon, and find the two lines containing `USERNAME.github.io`. Replace `USERNAME` with your actual GitHub username in both. This only affects the preview image that appears when someone pastes the link into Slack, iMessage or a course platform. Everything else already works.
+The live site is at **https://phantomninja121.github.io/creative-accent-interpreter/**. The link-preview image (what shows when someone pastes the link into Slack, iMessage or a course platform) already points there. If the site ever moves, update the two `og:image` / `twitter:image` lines near the top of `index.html`.
 
 ### Updating it later
 
@@ -91,6 +89,7 @@ icon-512.png
 apple-touch-icon.png
 og-image.png            preview image for shared links
 site.webmanifest        lets it install to a home screen
+fonts/                  Inter, bundled so it looks identical on every device
 .nojekyll               tells GitHub to serve the files as-is
 ```
 
@@ -115,11 +114,15 @@ verify.js                                  automated test of the whole flow
 
 **Chosen by looking, not reading.** Wherever a choice is aesthetic, the option shows itself rather than naming itself. Case, family and source are type specimens. Audience is eight hand-drawn line icons. Fills are a flat disc against a gradient disc. Titles are a miniature mock of a title over two label lines, drawn live in the student's own palette from the swatches directly above. Texture is the same small drawing on grained paper against flat paper.
 
-**The progress bar takes the color of the dial you're on:** ink, coral, green, blue.
+**The dials are the loudest thing on screen.** The track fills in the section color up to the thumb, five ticks mark the five readings and the one you're in lights up, and the reading underneath changes only when you cross into a new band.
 
-**The card** is drawn on a canvas at 1600x1120 and downloaded as a PNG.
+**The progress bar and the current step take the color of the dial you're on:** ink, coral, green, blue.
 
-No frameworks, no build step, no dependencies. It's an HTML file and a text file.
+**The card** is drawn on a canvas at 1600x1240 and downloaded as a PNG. The four dials sit at the top with their readings, so the card explains itself; avatar, palette with hex codes, style and voice sit underneath.
+
+**Type** is Inter, with Inter Display for headings, bundled in `fonts/` rather than loaded from Google Fonts. That keeps the look identical on Mac, Windows and iPad, and keeps the zero-network-requests promise intact. The fonts are SIL Open Font License; see `fonts/OFL.txt`.
+
+No frameworks, no build step, no dependencies. It's an HTML file, a text file and some fonts.
 
 ---
 

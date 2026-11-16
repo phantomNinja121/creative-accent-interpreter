@@ -70,7 +70,7 @@ const fs = require('fs');
   // 4 · CARD
   await page.click('#nextBtn');
   await page.waitForTimeout(600);
-  await page.evaluate(() => window.CAI.drawCard());
+  await page.evaluate(() => window.CAI.paintCard());
   await page.waitForTimeout(200);
   const dataUrl = await page.evaluate(() => document.querySelector('#cardCanvas').toDataURL('image/png'));
   fs.writeFileSync('preview.png', Buffer.from(dataUrl.split(',')[1], 'base64'));
